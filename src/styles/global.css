@@ -772,6 +772,11 @@ button {
   transform: translateY(-2px);
 }
 
+.catalog-ruo {
+  color: var(--ink-soft);
+  font-size: 0.58rem;
+  margin: -1.6rem 0 2.4rem;
+}
 .grid-head {
   display: flex;
   align-items: center;
@@ -825,8 +830,9 @@ button {
   font-weight: 700;
   border: 1.5px solid var(--line);
   border-radius: 8px;
-  padding: 0.4rem 0.75rem;
-  min-height: 40px;
+  padding: 0.4rem 0.85rem;
+  min-height: 44px;
+  min-width: 44px;
   transition: border-color 0.15s var(--ease-out), background 0.15s var(--ease-out), color 0.15s var(--ease-out);
 }
 .grid-add:hover {

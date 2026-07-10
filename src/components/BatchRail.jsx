@@ -7,7 +7,7 @@ import SplitHeading from './SplitHeading'
 // a live-feeling rail of recent batch records. More credible than reviews,
 // and compliant — no human-effect testimonials.
 const BATCHES = [
-  { lot: 'GHK-CU · LOT 2417', purity: '99.2%', mass: '340.9 DA ✓' },
+  { lot: 'GHK-CU · LOT 2417', purity: '99.2%', mass: '403.9 DA ✓' },
   { lot: 'RETATRUTIDE · LOT 2431', purity: '99.5%', mass: '4731 DA ✓' },
   { lot: '5-AMINO-1MQ · LOT 2409', purity: '98.7%', mass: '160.2 DA ✓' },
   { lot: 'BPC-157 · LOT 2422', purity: '99.0%', mass: '1419 DA ✓' },

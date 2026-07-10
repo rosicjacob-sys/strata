@@ -117,6 +117,9 @@ export default function Catalog() {
           <p className="mono-label">MORE IN STOCK</p>
           <span className="grid-rule" aria-hidden="true" />
         </div>
+        <p className="catalog-ruo mono-label">
+          ALL PRODUCTS: FOR LABORATORY RESEARCH USE ONLY — NOT FOR HUMAN OR VETERINARY USE
+        </p>
         <div className="cat-grid">
           {CATALOG_EXTRA.map((c) => (
             <article className="grid-cell" key={c.name}>

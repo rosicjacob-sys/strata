@@ -12,7 +12,7 @@ export const PEPTIDES = [
     powder: 'blue',
     seq: 'Gly-His-Lys · Cu²⁺',
     purity: 99.2,
-    mass: '340.9 g/mol',
+    mass: '403.9 g/mol', // the Cu(II) complex, not the apo-peptide (340.4)
     price: 46,
     blurb: 'Copper-bound tripeptide. Studied in skin-remodeling and matrix-repair research.',
     research: 'Extracellular matrix · fibroblast · angiogenesis models',
@@ -60,29 +60,6 @@ export const CATALOG_EXTRA = [
   { name: 'Semaglutide', dose: 10, unit: 'MG', tag: 'GLP-1 AGONIST', purity: 99.4, price: 78 },
   { name: 'Ipamorelin', dose: 10, unit: 'MG', tag: 'GH SECRETAGOGUE', purity: 99.3, price: 38 },
   { name: 'Epithalon', dose: 50, unit: 'MG', tag: 'TETRAPEPTIDE', purity: 98.8, price: 44 },
-]
-
-export const PILLARS = [
-  {
-    k: '01',
-    title: 'HPLC-verified, every batch',
-    body: 'Reverse-phase HPLC and mass-spec on each lot. The purity number on the vial is the number the assay returned — never a target.',
-  },
-  {
-    k: '02',
-    title: 'A public paper trail',
-    body: 'Every lot ships with a downloadable third-party COA, keyed to the batch code printed on the cap. Nothing is unverifiable.',
-  },
-  {
-    k: '03',
-    title: 'Lyophilized, cold-chain',
-    body: 'Freeze-dried under vacuum, sealed under argon, shipped with cold packs. Reconstitution guidance in every box.',
-  },
-  {
-    k: '04',
-    title: 'Research-use handling',
-    body: 'Labeled and documented for laboratory research use only. Not for human or veterinary use. Sold to qualified researchers.',
-  },
 ]
 
 export const STEPS = [
