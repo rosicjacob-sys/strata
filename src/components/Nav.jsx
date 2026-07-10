@@ -12,9 +12,9 @@ const LINKS = [
 export function VialGlyph({ className = '' }) {
   return (
     <svg className={className} viewBox="0 0 32 32" width="22" height="22" aria-hidden="true">
-      <rect x="10" y="6" width="12" height="22" rx="3" fill="#E9EBEE" stroke="#14171A" strokeWidth="1.4" />
-      <rect x="9" y="2.5" width="14" height="5.5" rx="2" fill="#14171A" />
-      <rect x="11.4" y="18" width="9.2" height="8" rx="1.6" fill="#1F6FEB" />
+      <rect x="4" y="6" width="24" height="4" rx="1.5" fill="#14171A" />
+      <rect x="4" y="14" width="24" height="4" rx="1.5" fill="var(--accent, #1F6FEB)" />
+      <rect x="4" y="22" width="24" height="4" rx="1.5" fill="#8D97A3" />
     </svg>
   )
 }
@@ -65,9 +65,9 @@ export default function Nav() {
   return (
     <header className={`nav ${glassy ? 'nav-glass' : ''} ${hidden ? 'nav-hidden' : ''}`}>
       <div className="nav-inner">
-        <a className="nav-logo" href="#hero" aria-label="Atelier Peptide — home" onClick={(e) => go(e, '#hero')}>
+        <a className="nav-logo" href="#hero" aria-label="STRATA — home" onClick={(e) => go(e, '#hero')}>
           <VialGlyph />
-          <span className="nav-wordmark">ATELIER<span className="nav-word2">PEPTIDE</span></span>
+          <span className="nav-wordmark">STRATA<span className="nav-word2">PEPTIDE WORKS</span></span>
         </a>
         <nav className="nav-links" aria-label="Primary">
           {LINKS.map((l) => (

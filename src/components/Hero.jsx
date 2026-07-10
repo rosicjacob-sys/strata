@@ -1,10 +1,29 @@
+import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import SplitHeading from './SplitHeading'
 import Magnetic from './Magnetic'
 import { useReveal } from '../lib/reveal'
-import { scrollToEl } from '../lib/scroll'
+import { scrollToEl, scrollState } from '../lib/scroll'
+import { coarsePointer, reducedMotion } from '../lib/env'
 
 export default function Hero() {
+  const titleRef = useRef(null)
+  // scroll-velocity-reactive display width: the headline breathes wider with
+  // scroll speed (capped), snaps back with the smoothed velocity.
+  useEffect(() => {
+    if (reducedMotion() || coarsePointer()) return
+    let w = 124
+    const tick = () => {
+      const el = titleRef.current && titleRef.current.querySelector('h1')
+      if (!el) return
+      const target = Math.min(124 + Math.abs(scrollState.velocity) * 3.2, 134)
+      w += (target - w) * 0.12
+      el.style.fontVariationSettings = `'wdth' ${w.toFixed(2)}`
+    }
+    gsap.ticker.add(tick)
+    return () => gsap.ticker.remove(tick)
+  }, [])
+
   const scope = useReveal((el) =>
     gsap.from(el.querySelectorAll('[data-reveal]'), {
       y: 26,
@@ -23,12 +42,14 @@ export default function Hero() {
           <p className="eyebrow" data-reveal>
             RESEARCH PEPTIDES — HPLC-VERIFIED, BATCH-TRACEABLE
           </p>
-          <SplitHeading as="h1" className="hero-title">
-            Peptides with a <em>paper</em> trail.
-          </SplitHeading>
+          <div ref={titleRef}>
+            <SplitHeading as="h1" className="hero-title">
+              Proof, layer by <em>layer</em>.
+            </SplitHeading>
+          </div>
           <p className="hero-sub" data-reveal>
-            Lyophilized, argon-sealed, and tested by an independent lab — every lot ships with a
-            public certificate of analysis keyed to the batch on the cap.
+            Every lot is built in strata: assayed, lyophilized, argon-sealed, documented, and
+            cold-shipped — with a public certificate of analysis keyed to the batch on the cap.
           </p>
           <div className="hero-ctas" data-reveal>
             <Magnetic>

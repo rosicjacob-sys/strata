@@ -47,6 +47,10 @@ export default function Process() {
           vialStore.wCloud = 0
           vialStore.wTorus = 0
           vialStore.rungReveal = Math.min(Math.max((p - 0.18) / 0.72, 0), 1)
+          // the camera slowly circles the assembling helix across the pin
+          vialStore.camOrbit = -0.3 + p * 0.65
+          vialStore.camFocus = 0.5
+          vialStore.lookY = -0.15 + p * 0.45
           if (p >= 0.25) active = Math.min(3, Math.floor((p - 0.25) / (0.75 / 4)))
           rows.forEach((r, i) => r.classList.toggle('is-active', i === active))
         },
@@ -59,6 +63,8 @@ export default function Process() {
           vialStore.wHelix = 0
           vialStore.wMound = 1
           vialStore.rungReveal = 0
+          vialStore.camOrbit = -0.3
+          vialStore.lookY = 0
         },
       })
       return () => {

@@ -126,7 +126,7 @@ export default function Order() {
             </p>
             <p className="order-ruo">
               For laboratory research use only — not for human or veterinary use. Bulk and standing
-              lab orders: <a href="mailto:lab@atelierpeptide.co">lab@atelierpeptide.co</a>.
+              lab orders: <a href="mailto:lab@strata.works">lab@strata.works</a>.
             </p>
           </div>
         </div>

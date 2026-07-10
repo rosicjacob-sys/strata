@@ -7,6 +7,7 @@ import { setVialColor } from '../three/vialStore'
 import { reducedMotion } from '../lib/env'
 import SplitHeading from './SplitHeading'
 import Counter from './Counter'
+import Chromatogram from './Chromatogram'
 
 /**
  * The catalog. Three focus peptides are big selectable rows whose selection
@@ -26,16 +27,24 @@ export default function Catalog() {
     root.setProperty('--accent-deep', active.uiDeep || active.hueDeep)
   }, [active])
 
-  const scope = useReveal((el) =>
-    gsap.from(el.querySelectorAll('.pep-row, .grid-cell'), {
+  const scope = useReveal((el) => {
+    const tl = gsap.timeline({
+      scrollTrigger: { trigger: el, start: 'top 74%', once: true },
+    })
+    tl.from(el.querySelectorAll('.pep-row, .grid-cell'), {
       y: 34,
       autoAlpha: 0,
       duration: 0.8,
       ease: 'power3.out',
       stagger: 0.07,
-      scrollTrigger: { trigger: el, start: 'top 74%', once: true },
-    })
-  )
+    }).fromTo(
+      el.querySelectorAll('.chroma [pathLength]'),
+      { strokeDasharray: 1, strokeDashoffset: 1 },
+      { strokeDashoffset: 0, duration: 1.2, ease: 'power2.inOut', stagger: 0.15 },
+      '<0.3'
+    )
+    return tl
+  })
 
   const select = (id) => {
     setActiveId(id)
@@ -93,6 +102,7 @@ export default function Catalog() {
                   <span className="pep-purity mono-label">
                     <Counter value={p.purity} suffix="%" /> HPLC
                   </span>
+                  <Chromatogram purity={p.purity} seed={p.dose} w={140} h={30} />
                 </div>
                 <div className="pep-buy">
                   <span className="pep-price">${p.price}</span>

@@ -15,7 +15,7 @@ export default function Footer() {
         <div className="footer-brand">
           <p className="footer-logo">
             <VialGlyph />
-            <span>ATELIER PEPTIDE</span>
+            <span>STRATA</span>
           </p>
           <p className="mono-label">RESEARCH-GRADE · BATCH-TRACEABLE</p>
           <p className="footer-tag">Lyophilized peptides with a public paper trail.</p>
@@ -35,7 +35,7 @@ export default function Footer() {
         </nav>
         <div className="footer-col">
           <p className="mono-label footer-head">CONTACT</p>
-          <a href="mailto:lab@atelierpeptide.co">lab@atelierpeptide.co</a>
+          <a href="mailto:lab@strata.works">lab@strata.works</a>
           <p className="footer-pay" aria-label="Accepted payments: Visa, Mastercard, American Express, wire transfer">
             {PAYMENTS.map((p) => (
               <span className="pay-chip mono-label" key={p}>
@@ -51,7 +51,7 @@ export default function Footer() {
           Sales restricted to purchasers 21+ acting on behalf of a laboratory or research
           institution. Handle all compounds with appropriate laboratory controls.
         </p>
-        <p className="mono-label footer-copy">© 2026 ATELIER PEPTIDE LLC · ALL RIGHTS RESERVED</p>
+        <p className="mono-label footer-copy">© 2026 STRATA PEPTIDE WORKS LLC · ALL RIGHTS RESERVED</p>
       </div>
     </footer>
   )

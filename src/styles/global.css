@@ -1544,3 +1544,108 @@ html.force-rm .batch-track {
 html.force-rm .proc-hint {
   display: none;
 }
+
+/* ============================================================
+   STRATA v2 additions
+   ============================================================ */
+
+/* ---------- boot sequence ---------- */
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  background: var(--canvas);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.boot-inner {
+  display: grid;
+  gap: 1.1rem;
+  justify-items: center;
+}
+.boot-mark {
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 125;
+  font-weight: 740;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  letter-spacing: 0.08em;
+}
+.boot-lines {
+  display: grid;
+  gap: 7px;
+  width: min(280px, 60vw);
+}
+.boot-line {
+  display: block;
+  height: 2px;
+  background: var(--ink);
+  opacity: 0.85;
+}
+.boot-line:nth-child(2) { opacity: 0.35; }
+.boot-line:nth-child(3) { background: var(--accent); }
+.boot-line:nth-child(4) { opacity: 0.35; }
+.boot-line:nth-child(5) { opacity: 0.15; }
+.boot-read {
+  color: var(--ink-soft);
+}
+
+/* ---------- strata lines motif ---------- */
+.strata-lines {
+  display: grid;
+  gap: 8px;
+  padding-block: 2.6rem 0;
+}
+.strata-lines span {
+  display: block;
+  height: 1.5px;
+  background: var(--ink);
+  opacity: 0.12;
+}
+.strata-lines span:nth-child(2) { opacity: 0.3; }
+.strata-lines .strata-accent {
+  background: var(--accent);
+  opacity: 0.85;
+  transition: background 0.4s ease;
+}
+.strata-lines span:nth-child(5) { opacity: 0.06; }
+
+/* ---------- chromatograms ---------- */
+.chroma {
+  display: block;
+  color: var(--ink-soft);
+  margin-top: 0.45rem;
+  max-width: 150px;
+}
+.verify-chroma {
+  max-width: 620px;
+  margin-bottom: 2.6rem;
+  color: rgba(238, 241, 245, 0.5);
+}
+.verify-chroma .chroma {
+  max-width: 100%;
+  width: 100%;
+}
+
+/* ---------- marquee data layer ---------- */
+.mk-seq {
+  display: inline-flex;
+  white-space: nowrap;
+  will-change: transform;
+  color: var(--ink-soft);
+  opacity: 0.5;
+  font-size: 0.6rem;
+  margin-top: 0.55rem;
+}
+
+/* velocity-reactive hero title gets its base width from JS; keep CSS base */
+.hero-title {
+  font-variation-settings: 'wdth' 124;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mk-seq { transform: none !important; }
+  .boot { display: none; }
+}
+html.force-rm .mk-seq { transform: none !important; }
+html.force-rm .boot { display: none; }

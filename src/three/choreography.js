@@ -7,11 +7,9 @@ import { MQ_DESKTOP, MQ_MOBILE, MQ_REDUCED_DESKTOP, MQ_REDUCED_MOBILE } from '..
 gsap.registerPlugin(ScrollTrigger)
 
 /**
- * The compound's journey. Every waypoint scrubs a FULL shape-weight profile
- * (cloud/mound/helix/torus) plus position — consecutive tweens on the same
- * fields, immediateRender off, ranges never overlapping. The pinned process
- * scene owns wHelix/wCloud/rungReveal directly (see Process.jsx) in the gap
- * between the #process and #verify waypoints.
+ * STRATA v2 choreography: shape-weight profiles + a scroll-driven camera rig
+ * (dolly/height/orbit/focus) scrubbed per section. The pinned process scene
+ * owns weights, rungReveal, and the orbit sweep inside its gap (Process.jsx).
  */
 export function useVialChoreography() {
   useLayoutEffect(() => {
@@ -26,30 +24,50 @@ export function useVialChoreography() {
       })
 
     const intro = () =>
-      gsap.to(vialStore, { intro: 1, duration: 1.6, ease: 'power3.out', delay: 0.2 })
+      gsap.to(vialStore, { intro: 1, duration: 1.7, ease: 'power3.out', delay: 0.15 })
 
     mm.add(MQ_DESKTOP, () => {
       gsap.set(vialStore, {
         x: 0.26, y: 0, scale: 1, spotlight: 0, pose: 0,
         wCloud: 1, wMound: 0, wHelix: 0, wTorus: 0, rungReveal: 0,
+        camZ: 7.5, camY: 0.15, camOrbit: 0, camFocus: 0, lookY: 0,
       })
       intro()
-      // hero cloud -> settled powder mound at the catalog's left gutter
-      wp('#catalog', { x: -0.36, y: -0.04, scale: 0.6, wCloud: 0, wMound: 1, wHelix: 0, wTorus: 0 })
-      // approach the pinned scene as a mound; the pin itself assembles the helix
-      wp('#process', { x: 0.24, y: 0, scale: 0.85, wMound: 1, wCloud: 0, wHelix: 0, wTorus: 0 })
-      // dark verification: helix stands tall in the spotlight
-      wp('#verify', { x: 0.28, y: 0, scale: 1.02, spotlight: 1, wHelix: 1, wMound: 0, wCloud: 0, wTorus: 0, rungReveal: 1 }, 'top 85%', 'top 30%')
-      // relax to a small drifting cloud beside the batch ledger
-      wp('#reviews', { x: 0.32, y: 0.05, scale: 0.42, spotlight: 0, wCloud: 1, wHelix: 0, wMound: 0, wTorus: 0 }, 'top 95%', 'top 45%')
-      // the dose ring hovers beside the buy box
-      wp('#order', { x: -0.3, y: 0.02, scale: 0.5, wTorus: 1, wCloud: 0, wHelix: 0, wMound: 0 })
+      // cloud -> settled mound; camera sinks low and pushes in a touch
+      wp('#catalog', {
+        x: -0.36, y: -0.04, scale: 0.6, wCloud: 0, wMound: 1, wHelix: 0, wTorus: 0,
+        camZ: 7.0, camY: -0.5, lookY: -0.15,
+      })
+      // approach the pin as a mound; camera returns to eye level
+      wp('#process', {
+        x: 0.24, y: 0, scale: 0.85, wMound: 1, wCloud: 0, wHelix: 0, wTorus: 0,
+        camZ: 6.1, camY: 0.05, lookY: 0, camFocus: 0.5, camOrbit: -0.3,
+      })
+      // dark verification: low angle looking up at the sequenced helix
+      wp('#verify', {
+        x: 0.33, y: 0, scale: 1.0, spotlight: 1,
+        wHelix: 1, wMound: 0, wCloud: 0, wTorus: 0, rungReveal: 1,
+        camZ: 6.4, camY: -0.7, lookY: 0.35, camFocus: 0.3, camOrbit: 0.15,
+      }, 'top 85%', 'top 30%')
+      // relax beside the ledger
+      wp('#reviews', {
+        x: 0.32, y: 0.05, scale: 0.42, spotlight: 0,
+        wCloud: 1, wHelix: 0, wMound: 0, wTorus: 0,
+        camZ: 7.3, camY: 0.1, lookY: 0, camFocus: 0, camOrbit: 0,
+      }, 'top 95%', 'top 45%')
+      // dose ring beside the buy box; slight top-down
+      wp('#order', {
+        x: -0.3, y: 0.02, scale: 0.5, wTorus: 1, wCloud: 0, wHelix: 0, wMound: 0,
+        camZ: 6.8, camY: 0.9, lookY: -0.1,
+      })
       const arriveD = ScrollTrigger.create({
         trigger: '#order', start: 'top 55%', once: true,
         onEnter: () => window.dispatchEvent(new CustomEvent('vial-arrived')),
       })
-      // calm cloud at the close
-      wp('#final-cta', { x: 0.26, y: -0.03, scale: 0.62, wCloud: 1, wTorus: 0, dropY: 0 }, 'top bottom', 'top 45%')
+      wp('#final-cta', {
+        x: 0.26, y: -0.03, scale: 0.62, wCloud: 1, wTorus: 0, dropY: 0,
+        camZ: 7.5, camY: 0.15, lookY: 0, camOrbit: 0, camFocus: 0,
+      }, 'top bottom', 'top 45%')
       wp('#site-footer', { y: -0.95 }, 'top bottom', 'top 60%')
       return () => arriveD.kill()
     })
@@ -58,13 +76,16 @@ export function useVialChoreography() {
       gsap.set(vialStore, {
         x: 0.18, y: -0.42, scale: 0.5, spotlight: 0, pose: 0,
         wCloud: 1, wMound: 0, wHelix: 0, wTorus: 0, rungReveal: 0,
+        camZ: 7.5, camY: 0.15, camOrbit: 0, camFocus: 0, lookY: 0,
       })
       intro()
       wp('#catalog', { x: 0.28, y: 0.32, scale: 0.26, wCloud: 0, wMound: 1, wHelix: 0, wTorus: 0 })
-      // no pin on mobile: a short scrub assembles the helix in place
-      wp('#process', { x: 0.02, y: 0.24, scale: 0.5, pose: 1, wHelix: 1, wMound: 0, wCloud: 0, wTorus: 0, rungReveal: 1 }, 'top 80%', 'top 12%')
-      wp('#verify', { x: 0, y: 0.26, scale: 0.56, spotlight: 1, pose: 0 }, 'top 85%', 'top 28%')
-      wp('#reviews', { x: 0.3, y: 0.32, scale: 0.26, spotlight: 0, wCloud: 1, wHelix: 0, rungReveal: 0 }, 'top 95%', 'top 45%')
+      wp('#process', {
+        x: 0.02, y: 0.24, scale: 0.5, pose: 1,
+        wHelix: 1, wMound: 0, wCloud: 0, wTorus: 0, rungReveal: 1, camOrbit: -0.25,
+      }, 'top 80%', 'top 12%')
+      wp('#verify', { x: 0, y: 0.26, scale: 0.56, spotlight: 1, pose: 0, camY: -0.4, lookY: 0.25 }, 'top 85%', 'top 28%')
+      wp('#reviews', { x: 0.3, y: 0.32, scale: 0.26, spotlight: 0, wCloud: 1, wHelix: 0, rungReveal: 0, camY: 0.15, lookY: 0, camOrbit: 0 }, 'top 95%', 'top 45%')
       wp('#order', { x: 0.28, y: 0.3, scale: 0.3, wTorus: 1, wCloud: 0 })
       const arriveM = ScrollTrigger.create({
         trigger: '#order', start: 'top 55%', once: true,
@@ -75,8 +96,6 @@ export function useVialChoreography() {
       return () => arriveM.kill()
     })
 
-    // Reduced motion: one static composed frame — the assembled helix, the
-    // most branded shape, at the hero position.
     const staticPose = (mobile) => () =>
       gsap.set(vialStore, {
         x: mobile ? 0.18 : 0.26,
@@ -88,6 +107,7 @@ export function useVialChoreography() {
         spotlight: 0,
         pose: 0,
         dropY: 0,
+        camZ: 7.5, camY: 0.15, camOrbit: 0, camFocus: 0, lookY: 0,
       })
     mm.add(MQ_REDUCED_DESKTOP, staticPose(false))
     mm.add(MQ_REDUCED_MOBILE, staticPose(true))

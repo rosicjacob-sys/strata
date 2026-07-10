@@ -2,14 +2,17 @@ import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
 import { Environment, Lightformer } from '@react-three/drei'
-import Compound from './Compound'
+import { EffectComposer, Bloom } from '@react-three/postprocessing'
+import StrataParticles from './StrataParticles'
 import { vialStore } from './vialStore'
 import { coarsePointer } from '../lib/env'
 import { radialTexture } from './textures'
 
-const T_FIXED = 0.9 // frozen time source under reduced motion
-const DESKTOP_COUNTS = { backbone: 220, rungs: 24, perRung: 9, dust: 460 } // ~896
-const MOBILE_COUNTS = { backbone: 80, rungs: 12, perRung: 5, dust: 90 } // ~230
+const T_FIXED = 0.9
+const DESKTOP_COUNTS = { backbone: 560, rungs: 26, perRung: 8, dust: 5000 } // ~5768
+const MOBILE_COUNTS = { backbone: 200, rungs: 14, perRung: 6, dust: 850 } // ~1134
+// Bloom rides a transparent canvas — flip off if the visual test shows artifacts.
+const ENABLE_BLOOM = true
 
 export default function AtelierScene({ reduced, mobile }) {
   const posRef = useRef(null)
@@ -19,7 +22,9 @@ export default function AtelierScene({ reduced, mobile }) {
   const fillRef = useRef(null)
   const glowRef = useRef(null)
   const shadowRef = useRef(null)
+  const bloomRef = useRef(null)
   const ptr = useRef({ x: 0, y: 0, tx: 0, ty: 0 })
+  const look = useMemo(() => new THREE.Vector3(), [])
 
   const shadowTex = useMemo(() => radialTexture('20,23,26', 0.5), [])
   const glowTex = useMemo(() => radialTexture('120,140,170', 0.5), [])
@@ -42,20 +47,32 @@ export default function AtelierScene({ reduced, mobile }) {
     const p = ptr.current
     p.x += (p.tx - p.x) * 0.06
     p.y += (p.ty - p.y) * 0.06
-    const sc = Math.max(vh * 0.155 * s.scale * s.intro, 0.0001)
-    const floatY = reduced ? 0 : Math.sin(t * 0.6) * 0.03
+
+    const sc = Math.max(vh * 0.15 * s.scale * s.intro, 0.0001)
     const px = s.x * vw
     const py = (s.y + s.dropY) * vh
     posRef.current.position.set(px, py, 0)
     posRef.current.scale.setScalar(sc)
-    // whole-system sway + cursor parallax (the shapes spin internally)
-    swayRef.current.rotation.set(
-      0.06 + p.y * 0.1 + s.pose * 0.4 + floatY,
-      p.x * 0.12 + s.pose * 0.6,
-      0
-    )
+    s._worldScale = sc
+    swayRef.current.rotation.set(0.05 + p.y * 0.05 + s.pose * 0.4, s.pose * 0.6, 0)
 
-    // weight sums for lighting/props
+    // --- scroll-driven camera: dolly + height + orbit, pointer parallax on
+    // top. camFocus dials the anchor from the page axis (0 — protagonist sits
+    // off-center, like v1's fixed camera) to the object itself (1 — the pin
+    // circles the assembling helix). ---
+    const cam = state.camera
+    const orbit = s.camOrbit + p.x * 0.08
+    const cz = s.camZ
+    const ax = px * s.camFocus
+    const ay = py * s.camFocus
+    cam.position.set(
+      ax + Math.sin(orbit) * cz,
+      ay + s.camY + p.y * 0.35,
+      Math.cos(orbit) * cz
+    )
+    look.set(ax, ay + s.lookY, 0)
+    cam.lookAt(look)
+
     const sum = Math.max(s.wCloud + s.wMound + s.wHelix + s.wTorus, 0.0001)
     const wh = Math.max(s.wHelix, 0) / sum
     const wm = Math.max(s.wMound, 0) / sum
@@ -67,18 +84,17 @@ export default function AtelierScene({ reduced, mobile }) {
       rimRef.current.color.copy(s.color)
     }
     if (glowRef.current) {
-      glowRef.current.material.opacity = 0.1 + wh * 0.16 + s.spotlight * 0.26
+      glowRef.current.material.opacity = 0.09 + wh * 0.1 + s.spotlight * 0.12
       glowRef.current.material.color.copy(s.color)
-      glowRef.current.scale.set(sc * 5.6, sc * 5.6, 1)
-      glowRef.current.position.set(px, py, -1.5)
+      glowRef.current.scale.set(sc * 5.8, sc * 5.8, 1)
+      glowRef.current.position.set(px, py, -1.6)
     }
     if (shadowRef.current) {
-      // strongest under the settled mound, faint under the cloud, gone in dark
-      shadowRef.current.material.opacity =
-        (0.1 + wm * 0.2) * (1 - s.spotlight * 0.6) * s.intro
-      shadowRef.current.scale.set(sc * 2.4, sc * 0.6, 1)
-      shadowRef.current.position.set(px, py - sc * 1.45, -0.4)
+      shadowRef.current.material.opacity = (0.1 + wm * 0.2) * (1 - s.spotlight * 0.6) * s.intro
+      shadowRef.current.scale.set(sc * 2.5, sc * 0.6, 1)
+      shadowRef.current.position.set(px, py - sc * 1.5, -0.4)
     }
+    if (bloomRef.current) bloomRef.current.intensity = 0.22 + s.spotlight * 0.45
   }
 
   useFrame((state) => {
@@ -93,7 +109,6 @@ export default function AtelierScene({ reduced, mobile }) {
     three.invalidate()
   })
 
-  // Reduced motion: peptide selection snaps the color — compose a fresh frame.
   useEffect(() => {
     if (!reduced) return
     const onSnap = () => {
@@ -105,6 +120,7 @@ export default function AtelierScene({ reduced, mobile }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduced])
 
+  const usePost = ENABLE_BLOOM && !mobile && !reduced
   return (
     <>
       <ambientLight ref={fillRef} intensity={0.6} color="#e8ecf2" />
@@ -124,9 +140,21 @@ export default function AtelierScene({ reduced, mobile }) {
       </sprite>
       <group ref={posRef}>
         <group ref={swayRef}>
-          <Compound counts={mobile ? MOBILE_COUNTS : DESKTOP_COUNTS} reduced={reduced} />
+          <StrataParticles counts={mobile ? MOBILE_COUNTS : DESKTOP_COUNTS} reduced={reduced} />
         </group>
       </group>
+      {usePost && (
+        <EffectComposer multisampling={0}>
+          <Bloom
+            ref={bloomRef}
+            mipmapBlur
+            intensity={0.25}
+            luminanceThreshold={0.75}
+            luminanceSmoothing={0.25}
+            radius={0.72}
+          />
+        </EffectComposer>
+      )}
     </>
   )
 }
