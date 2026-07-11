@@ -35,6 +35,7 @@ const VERT = /* glsl */ `
   attribute float aPhase;
   attribute float aRungT;   // 0..1 along the helix
   attribute float aSide;    // -1..1 across a rung
+  attribute float aLayer;   // 0..4 — which stratum in the stack state
   attribute vec3 aSeed;
 
   varying vec3 vColor;
@@ -52,7 +53,9 @@ const VERT = /* glsl */ `
     );
 
     vec3 mound = aMound;
-    if (aTier > 1.5) mound.y += sin(uTime * 1.2 + aPhase) * 0.02;
+    float layerDir = mod(aLayer, 2.0) * 2.0 - 1.0;
+    mound.xz = rot(uTime * 0.12 * layerDir) * mound.xz;
+    mound.y += sin(uTime * 0.7 + aLayer * 1.3) * 0.025;
 
     vec3 helix = aHelix;
     float gate = 1.0;
@@ -96,6 +99,15 @@ const VERT = /* glsl */ `
       vColor = mix(uColor, vec3(1.0), 0.42 + 0.25 * fract(aPhase * 3.7));
       vGlow = 0.18;
     }
+    // stack state: geological grading, bottom-dark to top-light, the middle
+    // stratum wears the compound's accent
+    vec3 strataCol;
+    if (aLayer < 0.5)      strataCol = vec3(0.5, 0.54, 0.59);
+    else if (aLayer < 1.5) strataCol = vec3(0.65, 0.68, 0.72);
+    else if (aLayer < 2.5) strataCol = mix(uColor, vec3(1.0), 0.12);
+    else if (aLayer < 3.5) strataCol = vec3(0.78, 0.81, 0.85);
+    else                   strataCol = vec3(0.89, 0.91, 0.94);
+    vColor = mix(vColor, strataCol, clamp(uW.y * 1.15, 0.0, 1.0));
     vTier = aTier;
   }
 `
@@ -140,6 +152,7 @@ export default function StrataParticles({ counts, reduced = false }) {
     const helix = new Float32Array(total * 3)
     const torus = new Float32Array(total * 3)
     const tier = new Float32Array(total)
+    const layer = new Float32Array(total)
     const size = new Float32Array(total)
     const phase = new Float32Array(total)
     const rungT = new Float32Array(total)
@@ -198,10 +211,16 @@ export default function StrataParticles({ counts, reduced = false }) {
       cloud[k * 3] = g() * 1.55
       cloud[k * 3 + 1] = g() * 1.05
       cloud[k * 3 + 2] = g() * 1.15
+      // the STRATA stack: five thin floating discs, tapering upward,
+      // crisp rims (edge-biased sampling), thin slabs
+      const L = Math.floor(rnd() * 5)
+      layer[k] = L
+      const RADII = [1.28, 1.1, 0.94, 0.8, 0.66]
       const th = rnd() * Math.PI * 2
-      const rr2 = Math.sqrt(rnd()) * 1.1
+      let rr2 = Math.sqrt(rnd()) * RADII[L]
+      if (rnd() < 0.22) rr2 = RADII[L] * (0.93 + rnd() * 0.07) // rim bias
       mound[k * 3] = Math.cos(th) * rr2
-      mound[k * 3 + 1] = -1.0 + Math.pow(1 - rr2 / 1.1, 1.5) * 0.9 + rnd() * 0.05
+      mound[k * 3 + 1] = -0.86 + L * 0.43 + (rnd() - 0.5) * 0.055
       mound[k * 3 + 2] = Math.sin(th) * rr2
       const u = rnd() * Math.PI * 2
       const v = rnd() * Math.PI * 2
@@ -229,6 +248,7 @@ export default function StrataParticles({ counts, reduced = false }) {
     geo.setAttribute('aPhase', new THREE.BufferAttribute(phase, 1))
     geo.setAttribute('aRungT', new THREE.BufferAttribute(rungT, 1))
     geo.setAttribute('aSide', new THREE.BufferAttribute(side, 1))
+    geo.setAttribute('aLayer', new THREE.BufferAttribute(layer, 1))
     geo.setAttribute('aSeed', new THREE.BufferAttribute(seed, 3))
     // generous static bounds — targets never leave this sphere
     geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 0, 0), 6)

@@ -84,7 +84,7 @@ export default function AtelierScene({ reduced, mobile }) {
       rimRef.current.color.copy(s.color)
     }
     if (glowRef.current) {
-      glowRef.current.material.opacity = 0.09 + wh * 0.1 + s.spotlight * 0.12
+      glowRef.current.material.opacity = 0.07 * (1 - wm) + wh * 0.1 + s.spotlight * 0.12
       glowRef.current.material.color.copy(s.color)
       glowRef.current.scale.set(sc * 5.8, sc * 5.8, 1)
       glowRef.current.position.set(px, py, -1.6)

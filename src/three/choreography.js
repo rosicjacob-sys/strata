@@ -35,8 +35,8 @@ export function useVialChoreography() {
       intro()
       // cloud -> settled mound; camera sinks low and pushes in a touch
       wp('#catalog', {
-        x: -0.36, y: -0.04, scale: 0.6, wCloud: 0, wMound: 1, wHelix: 0, wTorus: 0,
-        camZ: 7.0, camY: -0.5, lookY: -0.15,
+        x: -0.405, y: -0.02, scale: 0.53, wCloud: 0, wMound: 1, wHelix: 0, wTorus: 0,
+        camZ: 7.1, camY: -0.4, lookY: -0.08,
       })
       // approach the pin as a mound; camera returns to eye level
       wp('#process', {
